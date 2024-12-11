@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Summary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex justify-center mt-10">
+        <!-- Input for Account Number -->
+        <div class="mb-4">
+            <label for="account-number" class="block text-lg font-medium text-gray-700">Enter Account Number:</label>
+            <input type="text" id="account-number" class="mt-2 px-4 py-2 border border-gray-300 rounded" placeholder="Account Number" />
+            <button onclick="fetchSummary()" class="bg-blue-500 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 mt-4">
+                Get Transactions
+            </button>
+        </div>
+    </div>
+
+    <div class="flex justify-center mt-10">
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Charge</th>
+                    <th>Account Number</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Hour</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody id="transaction-table-body">
+                <!-- Data rows will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <a href="customer-index.html">
+        <button class="bg-blue-500 mx-2 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+            Back
+        </button>
+    </a>
+
+    <script>
+        function fetchSummary() {
+            console.log(sessionStorage.getItem("customer-id"));            
+            const accountNumber = document.getElementById("account-number").value;
+    
+            if (!accountNumber) {
+                alert("Please enter an account number.");
+                return;
+            }
+    
+            // Fetch data from backend using the account number
+            fetch(`http://localhost:8080/getSummary?accountNumber=${accountNumber}`)  // Adjust URL as per your backend API
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById("transaction-table-body");
+    
+                    // Clear the table before inserting new data
+                    tableBody.innerHTML = '';
+    
+                    // Check if the response contains the 'All' array
+                    if (data.All) {
+                        data.All.forEach(transaction => {
+                            const row = document.createElement("tr");
+    
+                            // Create cells for each specific column
+                            const typeCell = document.createElement("td");
+                            typeCell.textContent = transaction.Type || "-";
+                            row.appendChild(typeCell);
+    
+                            const chargeCell = document.createElement("td");
+                            chargeCell.textContent = ("$" + transaction.Charge) || "-";
+                            row.appendChild(chargeCell);
+    
+                            const accountNumberCell = document.createElement("td");
+                            accountNumberCell.textContent = transaction["Account Number"] || "-";
+                            row.appendChild(accountNumberCell);
+
+                            const amountCell = document.createElement("td");
+                            amountCell.textContent = ("$" + transaction["Amount"]) || "-";
+                            row.appendChild(amountCell);
+    
+                            const dateCell = document.createElement("td");
+                            dateCell.textContent = transaction.Date || "-";
+                            row.appendChild(dateCell);
+    
+                            const hourCell = document.createElement("td");
+                            hourCell.textContent = transaction.Hour || "-";
+                            row.appendChild(hourCell);
+    
+                            const balanceCell = document.createElement("td");
+                            balanceCell.textContent = transaction.Balance || "-";
+                            row.appendChild(balanceCell);
+    
+                            // Append the row to the table body
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        // Handle case where no data is returned
+                        const row = document.createElement("tr");
+                        const cell = document.createElement("td");
+                        cell.colSpan = 6;  // Span across all columns
+                        cell.textContent = "No data available";
+                        row.appendChild(cell);
+                        tableBody.appendChild(row);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    const tableBody = document.getElementById("transaction-table-body");
+                    const row = document.createElement("tr");
+                    const cell = document.createElement("td");
+                    cell.colSpan = 6;  // Span across all columns
+                    cell.textContent = "Error loading data";
+                    row.appendChild(cell);
+                    tableBody.appendChild(row);
+                });
+        }
+    </script>
+    
+</body>
+
+</html>

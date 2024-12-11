@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Transaction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex flex-col items-center justify-center min-h-screen">
+        <!-- Transaction Form -->
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h2 class="text-2xl font-bold mb-4">Loan</h2>
+
+            <form id="transaction-form" class="space-y-4">
+                <div>
+                    <label for="ssn" class="block text-sm font-medium text-gray-700">SSN:</label>
+                    <input type="text" id="ssn" name="ssn" class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        required>
+                </div>
+                <div>
+                    <label for="amount" class="block text-sm font-medium text-gray-700">Amount:</label>
+                    <input type="number" id="amount" name="amount"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                </div>
+
+                <button type="submit"
+                    class="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-700 w-full">Submit</button>
+            </form>
+
+            <!-- Back Button -->
+            <div class="mt-4 text-center">
+                <a href="employee-index.html">
+                    <button class="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-700 w-full">
+                        Back
+                    </button>
+                </a>
+            </div>
+
+            <!-- Message Display -->
+            <div id="message" class="mt-4 text-center"></div>
+        </div>
+    </div>
+
+    <script>
+        // Handle form submission
+        document.getElementById("transaction-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Get form values
+            const ssn = document.getElementById("ssn").value;
+            const amount = document.getElementById("amount").value;
+
+            // Prepare data to send
+            const loanData = {
+                ssn: ssn,
+                amount: amount
+            };
+
+            // Send data to backend API
+            fetch('http://localhost:8080/giveLoan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loanData)
+            })
+                .then(response => response.text()) // Use `.text()` to handle plain text response
+                .then(data => {
+                    // Show success or failure message based on response
+                    const messageElement = document.getElementById("message");
+                    if (data.trim() === "Success") { // Match the exact string and trim any extra spaces
+                        messageElement.textContent = "Loan Successful!";
+                        messageElement.classList.add("text-green-500");
+                    } else {
+                        messageElement.textContent = "Loan Failed. Please try again.";
+                        messageElement.classList.add("text-red-500");
+                    }
+                    document.getElementById("transaction-form").reset();
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    const messageElement = document.getElementById("message");
+                    messageElement.textContent = "Error processing loan.";
+                    messageElement.classList.add("text-red-500");
+                    document.getElementById("transaction-form").reset();
+                });            
+        });
+    </script>
+</body>
+
+</html>

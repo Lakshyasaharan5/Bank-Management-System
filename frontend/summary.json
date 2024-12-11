@@ -1,0 +1,20 @@
+{
+    "All" : [
+        {
+            "Type": "Withdraw",
+            "Charge": "$0.01",
+            "Account Number": "011234567891",
+            "Date": "12/02/2024",
+            "Hour": "16:09",
+            "Balance": "$500"
+        },
+        {
+            "Type": "Withdraw",
+            "Charge": "$0.01",
+            "Account Number": "011234567891",
+            "Date": "12/05/2024",
+            "Hour": "16:09",
+            "Balance": "$550"
+        }
+    ]
+}

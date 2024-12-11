@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Balance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex justify-center mt-10">
+        <!-- Input for Account Number -->
+        <div class="mb-4">
+            <label for="account-number" class="block text-lg font-medium text-gray-700">Enter Account Number:</label>
+            <input type="text" id="account-number" class="mt-2 px-4 py-2 border border-gray-300 rounded" placeholder="Account Number" />
+            <button onclick="fetchBalance()" class="bg-blue-500 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 mt-4">
+                Check Balance
+            </button>
+        </div>
+    </div>
+
+    <div id="account-details" class="flex justify-center mt-10 hidden">
+        <table>
+            <thead>
+                <tr>
+                    <th>Account Type</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody id="account-table-body">
+                <!-- Data rows will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="error-message" class="flex justify-center mt-10 hidden">
+        <p class="text-red-500 font-bold">Error: Account not found or invalid.</p>
+    </div>
+
+    <a href="customer-index.html">
+        <button class="bg-blue-500 mx-2 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+            Back
+        </button>
+    </a>
+
+    <script>
+        // Function to fetch balance based on account number
+        function fetchBalance() {
+            const accountNumber = document.getElementById("account-number").value;
+            
+            if (!accountNumber) {
+                alert("Please enter an account number.");
+                return;
+            }
+
+            // Validate if account number is at least 11 digits (you can modify this length check)
+            if (accountNumber.length < 10) {
+                alert("Invalid account number.");
+                return;
+            }
+
+            // Fetch data from backend using the account number
+            fetch(`http://localhost:8080/getBalance?accountNumber=${accountNumber}`)  // Adjust URL as per your backend API
+                .then(response => response.json())
+                .then(data => {
+                    const accountDetails = document.getElementById("account-details");
+                    const errorMessage = document.getElementById("error-message");
+                    const accountTableBody = document.getElementById("account-table-body");
+
+                    // Clear the previous data
+                    accountTableBody.innerHTML = '';
+                    accountDetails.classList.add('hidden');
+                    errorMessage.classList.add('hidden');
+
+                    // Check if the account number is valid and we got the balance data
+                    if (data.balance !== null) {
+                        // Account Type Based on the first 2 digits
+                        const accountType = accountNumber.startsWith("10") ? "Checking" : accountNumber.startsWith("20") ? "Savings" : "Unknown";
+                        
+                        // Create the row for the account details
+                        const row = document.createElement("tr");
+
+                        // Create and append table cells
+                        const typeCell = document.createElement("td");
+                        typeCell.textContent = accountType;
+                        row.appendChild(typeCell);
+
+                        const balanceCell = document.createElement("td");
+                        balanceCell.textContent = data.balance;
+                        row.appendChild(balanceCell);
+
+                        // Append the row to the table
+                        accountTableBody.appendChild(row);
+
+                        // Show account details table
+                        accountDetails.classList.remove('hidden');
+                    } else {
+                        // If no data found or account is invalid
+                        errorMessage.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    const errorMessage = document.getElementById("error-message");
+                    errorMessage.classList.remove('hidden');
+                });
+        }
+    </script>
+</body>
+
+</html>

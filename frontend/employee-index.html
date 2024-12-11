@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Management Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100"> 
+    <!-- Container for buttons and logout -->
+    <div class="flex flex-col items-center justify-center h-screen">                
+        <!-- Action Buttons -->
+        <div id="action-buttons" class="space-y-4">
+            <a href="open-account.html">
+                <button class="bg-blue-500 mx-2 text-white font-bold py-2 px-6 rounded hover:bg-blue-700">
+                    Open Account
+                </button>
+            </a>
+            <a href="deposit.html">
+                <button class="bg-blue-500 mx-2 text-white font-bold py-2 px-6 rounded hover:bg-blue-700">
+                    Deposit Money
+                </button>
+            </a>
+            <a href="give-loan.html">
+                <button class="bg-blue-500 mx-2 text-white font-bold py-2 px-6 rounded hover:bg-blue-700">
+                    Give Loan
+                </button>
+            </a>
+            <a href="my-employees.html">
+                <button class="bg-blue-500 mx-2 text-white font-bold py-2 px-6 rounded hover:bg-blue-700">
+                    Check My Employees
+                </button>
+            </a>            
+        </div>
+
+        <!-- Manage Employees Button (Initially Hidden) -->
+        <div id="manage-employees-button" class="hidden mt-6 w-full text-center">
+            <a href="manage-employees.html" 
+                class="bg-blue-500 text-white font-bold py-2 px-6 rounded hover:bg-blue-700">
+                Manage Employees
+            </a>
+        </div>
+
+        <!-- Log Out Button -->
+        <div class="mt-6 w-full text-center">
+            <a href="login.html" 
+                class="bg-gray-500 text-white font-bold py-2 px-6 rounded hover:bg-gray-700">
+                Log out
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        
+        // Check if the user is a manager
+        const isManager = sessionStorage.getItem("isManager");
+
+        if (isManager && isManager === "true") {
+            // Hide the action buttons and show the Manage Employees button
+            document.getElementById("action-buttons").style.display = "none";
+            document.getElementById("manage-employees-button").style.display = "block";
+        } else {
+            // If not a manager, show the action buttons
+            document.getElementById("action-buttons").style.display = "block";
+            document.getElementById("manage-employees-button").style.display = "none";
+        }
+
+        console.log(sessionStorage.getItem("customer-id"));
+    </script>
+</body>
+
+</html>
